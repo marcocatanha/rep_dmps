@@ -1,0 +1,698 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<job-specification xmlns="http://com.fico/dmip/jobsAndJobSteps" xmlns:vc="http://www.w3.org/2007/XMLSchema-versioning" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://com.fico/dmip/jobsAndJobSteps SampleMergedJobTemplate.xsd">
+    <diagram-state>
+        <![CDATA[{"v":"1.0","s":0.6000000000000001,"p":"-1304.9166666666665 -8","d":90,"j":[{"i":"normalizePayloadStep","p":"271 336"},{"i":"CallSleepyRestStep","p":"282.5 672"},{"i":"formatRequest","p":"282.5 504"},{"i":"egressErrorFormatStep","p":"556.5 840"},{"i":"errorResultStep","p":"551.5 1008"},{"i":"formatResponse","p":"2.5 840"},{"i":"formatResult","p":"282.5 840"},{"i":"resultStep","p":"271.5 1008"},{"i":"initialize","p":"282.5 168"},{"i":"requestStep","p":"282.5 0"},{"i":"egressStep","p":"0 1008"}],"l":[{"f":"normalizePayloadStep","t":"formatRequest","s":"stream2"},{"f":"CallSleepyRestStep","t":"formatResponse","s":"s-1-B"},{"f":"CallSleepyRestStep","t":"formatResult","s":"s-1-B"},{"f":"CallSleepyRestStep","t":"egressErrorFormatStep","s":"s-1-E"},{"f":"formatRequest","t":"CallSleepyRestStep","s":"s-2-B"},{"f":"egressErrorFormatStep","t":"errorResultStep","s":"s-5-B"},{"f":"formatResponse","t":"egressStep","s":"s-3-B"},{"f":"formatResult","t":"resultStep","s":"s-6-B"},{"f":"initialize","t":"normalizePayloadStep","s":"s-4-B"},{"f":"requestStep","t":"initialize","s":"s-7-B"}],"g":[],"m":{"x":{"p":"1600 0","d":1600,"l":1601},"y":{"p":"0 1600","d":1600,"l":1601}}}]]>
+    </diagram-state>
+    <job-specification-version>
+        <version>1.0</version>
+        <dmip-version-since>1.0</dmip-version-since>
+        <organization>FICO</organization>
+    </job-specification-version>
+    <name>RequestResponse1</name>
+    <description>asdf</description>
+    <job-params>
+        <parameter>
+            <name>dmip.non.tx.job.acker.enforced</name>
+            <value>false</value>
+        </parameter>
+        <parameter>
+            <name>dmip.state.qos.consistency</name>
+            <value>true</value>
+        </parameter>
+        <parameter>
+            <name>dmip.state.qos.persistence</name>
+            <value>None</value>
+        </parameter>
+        <parameter>
+            <name>dmip.visualization.store.rolling.unit</name>
+            <value>Day</value>
+        </parameter>
+        <parameter>
+            <name>topology.stats.sample.rate</name>
+            <value>1</value>
+        </parameter>
+        <parameter>
+            <name>dmip.cache.group.name</name>
+            <value>groupOne</value>
+        </parameter>
+        <parameter>
+            <name>dmip.visualization.store.auto.cleanup.interval</name>
+            <value>1</value>
+        </parameter>
+    </job-params>
+    <job-steps>
+        <job-step parallelism-hint="1" xsi:type="json-normalization-job-step">
+            <description>JSON Normalization takes a single JSON object that was received as a string value and extracts various values. For each extracted value, it then adds a field to the tuple emitted to the output stream.</description>
+            <job-step-id>normalizePayloadStep</job-step-id>
+            <job-step-version>
+                <version>1.0</version>
+                <dmip-version-since>1.0</dmip-version-since>
+                <organization>FICO</organization>
+            </job-step-version>
+            <configuration>
+                <processing-units>
+                    <processing-unit>
+                        <required-fields>
+                            <required-field xsi:type="json-normalization-to-normalize-js-required-field">
+                                <name>to-normalize</name>
+                                <input-field>message</input-field>
+                            </required-field>
+                        </required-fields>
+                        <generated-fields>
+                            <generated-field xsi:type="json-normalization-normalized-field-js-generated-field">
+                                <output-stream-id>stream2</output-stream-id>
+                                <name>normalized-field</name>
+                                <output-field>execTime</output-field>
+                                <data-type>string</data-type>
+                            </generated-field>
+                        </generated-fields>
+                        <process-params>
+                            <parameter name="jsonPath" xsi:type="json-normalization-jsonPath-process-paramType">
+                                <value>$.examplePayload.stringProp</value>
+                            </parameter>
+                        </process-params>
+                    </processing-unit>
+                    <processing-unit>
+                        <required-fields>
+                            <required-field xsi:type="json-normalization-to-normalize-js-required-field">
+                                <name>to-normalize</name>
+                                <input-field>message</input-field>
+                            </required-field>
+                        </required-fields>
+                        <generated-fields>
+                            <generated-field xsi:type="json-normalization-normalized-field-js-generated-field">
+                                <output-stream-id>stream2</output-stream-id>
+                                <name>normalized-field</name>
+                                <output-field>payloadId</output-field>
+                                <data-type>string</data-type>
+                            </generated-field>
+                        </generated-fields>
+                        <process-params>
+                            <parameter name="jsonPath" xsi:type="json-normalization-jsonPath-process-paramType">
+                                <value>$.examplePayload.payloadId</value>
+                            </parameter>
+                        </process-params>
+                    </processing-unit>
+                </processing-units>
+            </configuration>
+            <job-step-links>
+                <out-stream>
+                    <stream-id>stream2</stream-id>
+                    <output-fields>
+                        <field data-type="any" keep="true">message</field>
+                        <field data-type="boolean" keep="true">ref</field>
+                        <field data-type="string" keep="true">timestampIngress</field>
+                        <field data-type="string" keep="true">transactionId</field>
+                        <field data-type="string" keep="true">execTime</field>
+                        <field data-type="string" keep="true">payloadId</field>
+                    </output-fields>
+                    <stream-consumers>
+                        <stream-consumer>
+                            <consuming-job-step-id>formatRequest</consuming-job-step-id>
+                            <grouping-by>SHUFFLE</grouping-by>
+                        </stream-consumer>
+                    </stream-consumers>
+                </out-stream>
+            </job-step-links>
+            <step-type>TRANSFORMATION</step-type>
+            <tuple-processing-type>PARTIAL</tuple-processing-type>
+            <job-step-builder-class>com.fico.dmip.procjobstep.normalization.JSONNormalizationStrategyBuilder</job-step-builder-class>
+            <schedulable>false</schedulable>
+            <requires-data-source>false</requires-data-source>
+        </job-step>
+        <job-step parallelism-hint="10" are-builtin-fields-for-error-stream="true" processing-iteration-count="1" xsi:type="rest-job-step">
+            <description>Sends a REST request to a specified endpoint. The response from the REST endpoint and the HTTP response code are both returned as generated fields.</description>
+            <job-step-id>CallSleepyRestStep</job-step-id>
+            <job-step-version>
+                <version>1.0</version>
+                <dmip-version-since>1.0</dmip-version-since>
+                <organization>FICO</organization>
+            </job-step-version>
+            <configuration>
+                <job-step-params xsi:type="rest-job-step-params">
+                    <rest-auth-type>dmp</rest-auth-type>
+                    <client-id secure="true">CImTkRh3mG7H9UsF1LFfhA==</client-id>
+                    <secret secure="true">J1gPEbO/beTYet3MXAZEHaD69epmYi+a+woecYBBTRpyhGmFwEvqW6Ntz9gjNhHu</secret>
+                    <bearer-token-url>https://iam-svc.dms.preview.usw2.ficoanalyticcloud.com/registration/rest/client/token</bearer-token-url>
+                    <endpoint-uri-template>https://instance-1dz3ly4pqdm.dms.preview.usw2.ficoanalyticcloud.com/DecisionExecutor/rest/service/processWithDecisionFlow?solutionID=1dz28bewf37&amp;corrId=RP${payloadId}_${transactionId}</endpoint-uri-template>
+                    <header-template>
+                        <![CDATA[Accept: application/json
+Content-Type: application/json]]>
+                    </header-template>
+                    <timeout>10000</timeout>
+                    <method>POST</method>
+                    <error-stream-name>s-1-E</error-stream-name>
+                    <connection-attempts>0</connection-attempts>
+                    <sleep-multiplier>1000</sleep-multiplier>
+                    <max-sleep-interval>3000</max-sleep-interval>
+                </job-step-params>
+                <processing-units>
+                    <processing-unit>
+                        <required-fields>
+                            <required-field xsi:type="rest-msg-or-path-js-required-field">
+                                <name>msg-or-path</name>
+                                <input-field>request</input-field>
+                            </required-field>
+                            <required-field xsi:type="rest-is-ref-js-required-field">
+                                <name>is-ref</name>
+                                <input-field>ref</input-field>
+                            </required-field>
+                        </required-fields>
+                        <generated-fields>
+                            <generated-field xsi:type="rest-response-code-js-generated-field">
+                                <output-stream-id>s-1-B</output-stream-id>
+                                <name>rest-response-code</name>
+                                <output-field>rest-response-code</output-field>
+                                <data-type>integer</data-type>
+                            </generated-field>
+                            <generated-field xsi:type="rest-response-js-generated-field">
+                                <output-stream-id>s-1-B</output-stream-id>
+                                <name>rest-response</name>
+                                <output-field>rest-response</output-field>
+                                <data-type>string</data-type>
+                            </generated-field>
+                        </generated-fields>
+                    </processing-unit>
+                </processing-units>
+            </configuration>
+            <job-step-links>
+                <out-stream>
+                    <stream-id>s-1-B</stream-id>
+                    <output-fields>
+                        <field data-type="any" keep="true">message</field>
+                        <field data-type="string" keep="true">execTime</field>
+                        <field data-type="boolean" keep="true">ref</field>
+                        <field data-type="string" keep="true">transactionId</field>
+                        <field data-type="string" keep="true">timestampIngress</field>
+                        <field data-type="string" keep="true">request</field>
+                        <field data-type="string" keep="true">payloadId</field>
+                        <field data-type="integer" keep="true">rest-response-code</field>
+                        <field data-type="string" keep="true">rest-response</field>
+                    </output-fields>
+                    <stream-consumers>
+                        <stream-consumer>
+                            <consuming-job-step-id>formatResponse</consuming-job-step-id>
+                            <grouping-by>SHUFFLE</grouping-by>
+                        </stream-consumer>
+                        <stream-consumer>
+                            <consuming-job-step-id>formatResult</consuming-job-step-id>
+                            <grouping-by>SHUFFLE</grouping-by>
+                        </stream-consumer>
+                    </stream-consumers>
+                </out-stream>
+                <out-stream stream-type="error">
+                    <stream-id>s-1-E</stream-id>
+                    <output-fields>
+                        <field data-type="any" keep="true">message</field>
+                        <field data-type="string" keep="true">execTime</field>
+                        <field data-type="boolean" keep="true">ref</field>
+                        <field data-type="string" keep="true">transactionId</field>
+                        <field data-type="string" keep="true">timestampIngress</field>
+                        <field data-type="string" keep="true">payloadId</field>
+                        <field data-type="string" keep="true">request</field>
+                        <field data-type="string" keep="true">error-message</field>
+                    </output-fields>
+                    <stream-consumers>
+                        <stream-consumer>
+                            <consuming-job-step-id>egressErrorFormatStep</consuming-job-step-id>
+                            <grouping-by>SHUFFLE</grouping-by>
+                        </stream-consumer>
+                    </stream-consumers>
+                </out-stream>
+            </job-step-links>
+            <step-type>TRANSFORMATION</step-type>
+            <tuple-processing-type>PARTIAL</tuple-processing-type>
+            <job-step-builder-class>com.fico.dmip.procjobstep.rest.RestStrategyBuilder</job-step-builder-class>
+            <schedulable>false</schedulable>
+            <requires-data-source>true</requires-data-source>
+        </job-step>
+        <job-step parallelism-hint="1" xsi:type="formatter-job-step">
+            <description>The formatter job step uses the supplied FreeMarker template to output a converted string from the DMP Streaming tuple input values.</description>
+            <job-step-id>formatRequest</job-step-id>
+            <job-step-version>
+                <version>1.0</version>
+                <dmip-version-since>1.0</dmip-version-since>
+                <organization>FICO</organization>
+            </job-step-version>
+            <configuration>
+                <processing-units>
+                    <processing-unit>
+                        <required-fields>
+                            <required-field xsi:type="formatter-input-js-required-field">
+                                <name>input</name>
+                                <input-field>execTime</input-field>
+                                <input-field>payloadId</input-field>
+                            </required-field>
+                        </required-fields>
+                        <generated-fields>
+                            <generated-field xsi:type="formatter-instantiatedTemplate-js-generated-field">
+                                <output-stream-id>s-2-B</output-stream-id>
+                                <name>instantiatedTemplate</name>
+                                <output-field>request</output-field>
+                                <data-type>string</data-type>
+                            </generated-field>
+                        </generated-fields>
+                        <process-params>
+                            <parameter name="conversionTemplate" xsi:type="formatter-js-process-paramType">
+                                <value>
+                                    <![CDATA[{"examplePayload":{"stringProp":"${execTime!}","payloadId":"${payloadId!}"}}]]>
+                                </value>
+                            </parameter>
+                        </process-params>
+                    </processing-unit>
+                </processing-units>
+            </configuration>
+            <job-step-links>
+                <out-stream>
+                    <stream-id>s-2-B</stream-id>
+                    <output-fields>
+                        <field data-type="any" keep="true">message</field>
+                        <field data-type="string" keep="true">execTime</field>
+                        <field data-type="boolean" keep="true">ref</field>
+                        <field data-type="string" keep="true">transactionId</field>
+                        <field data-type="string" keep="true">timestampIngress</field>
+                        <field data-type="string" keep="true">payloadId</field>
+                        <field data-type="string" keep="true">request</field>
+                    </output-fields>
+                    <stream-consumers>
+                        <stream-consumer>
+                            <consuming-job-step-id>CallSleepyRestStep</consuming-job-step-id>
+                            <grouping-by>SHUFFLE</grouping-by>
+                        </stream-consumer>
+                    </stream-consumers>
+                </out-stream>
+            </job-step-links>
+            <step-type>TRANSFORMATION</step-type>
+            <tuple-processing-type>PARTIAL</tuple-processing-type>
+            <job-step-builder-class>com.fico.dmip.procjobstep.formatter.FormatterStrategyBuilder</job-step-builder-class>
+            <schedulable>false</schedulable>
+            <requires-data-source>false</requires-data-source>
+        </job-step>
+        <job-step parallelism-hint="1" xsi:type="formatter-job-step">
+            <description>The formatter job step uses the supplied FreeMarker template to output a converted string from the DMP Streaming tuple input values.</description>
+            <job-step-id>egressErrorFormatStep</job-step-id>
+            <job-step-version>
+                <version>1.0</version>
+                <dmip-version-since>1.0</dmip-version-since>
+                <organization>FICO</organization>
+            </job-step-version>
+            <configuration>
+                <processing-units>
+                    <processing-unit>
+                        <required-fields>
+                            <required-field xsi:type="formatter-input-js-required-field">
+                                <name>input</name>
+                                <input-field>error-message</input-field>
+                            </required-field>
+                        </required-fields>
+                        <generated-fields>
+                            <generated-field xsi:type="formatter-instantiatedTemplate-js-generated-field">
+                                <output-stream-id>s-5-B</output-stream-id>
+                                <name>instantiatedTemplate</name>
+                                <output-field>timestampErrorEgress</output-field>
+                                <data-type>string</data-type>
+                            </generated-field>
+                        </generated-fields>
+                        <process-params>
+                            <parameter name="conversionTemplate" xsi:type="formatter-js-process-paramType">
+                                <value>
+                                    <![CDATA[${.now?date?string["yyyy-MM-dd\'T\'HH:mm:ss.SSSZ"]}]]>
+                                </value>
+                            </parameter>
+                        </process-params>
+                    </processing-unit>
+                </processing-units>
+            </configuration>
+            <job-step-links>
+                <out-stream>
+                    <stream-id>s-5-B</stream-id>
+                    <output-fields>
+                        <field data-type="any" keep="true">message</field>
+                        <field data-type="string" keep="true">execTime</field>
+                        <field data-type="boolean" keep="true">ref</field>
+                        <field data-type="string" keep="true">transactionId</field>
+                        <field data-type="string" keep="true">timestampIngress</field>
+                        <field data-type="string" keep="true">payloadId</field>
+                        <field data-type="string" keep="true">request</field>
+                        <field data-type="string" keep="true">error-message</field>
+                        <field data-type="string" keep="true">timestampErrorEgress</field>
+                    </output-fields>
+                    <stream-consumers>
+                        <stream-consumer>
+                            <consuming-job-step-id>errorResultStep</consuming-job-step-id>
+                            <grouping-by>SHUFFLE</grouping-by>
+                        </stream-consumer>
+                    </stream-consumers>
+                </out-stream>
+            </job-step-links>
+            <step-type>TRANSFORMATION</step-type>
+            <tuple-processing-type>PARTIAL</tuple-processing-type>
+            <job-step-builder-class>com.fico.dmip.procjobstep.formatter.FormatterStrategyBuilder</job-step-builder-class>
+            <schedulable>false</schedulable>
+            <requires-data-source>false</requires-data-source>
+        </job-step>
+        <job-step parallelism-hint="1" xsi:type="visualization-store-job-step">
+            <description>Indexes data into elasticsearch for the given elasticsearch type.</description>
+            <job-step-id>errorResultStep</job-step-id>
+            <job-step-version>
+                <version>1.0</version>
+                <dmip-version-since>1.0</dmip-version-since>
+                <organization>FICO</organization>
+            </job-step-version>
+            <configuration>
+                <job-step-params xsi:type="visualization-store-job-step-params">
+                    <es-type-name>errorResultStore</es-type-name>
+                    <batch-size>100</batch-size>
+                    <idle-time>1</idle-time>
+                </job-step-params>
+            </configuration>
+            <step-type>OUTBOUND</step-type>
+            <tuple-processing-type>PARTIAL</tuple-processing-type>
+            <job-step-builder-class>com.fico.dmip.procjobstep.visualization.VisualizationStoreStrategyBuilder</job-step-builder-class>
+            <schedulable>false</schedulable>
+            <requires-data-source>true</requires-data-source>
+        </job-step>
+        <job-step parallelism-hint="1" xsi:type="formatter-job-step">
+            <description>The formatter job step uses the supplied FreeMarker template to output a converted string from the DMP Streaming tuple input values.</description>
+            <job-step-id>formatResponse</job-step-id>
+            <job-step-version>
+                <version>1.0</version>
+                <dmip-version-since>1.0</dmip-version-since>
+                <organization>FICO</organization>
+            </job-step-version>
+            <configuration>
+                <processing-units>
+                    <processing-unit>
+                        <required-fields>
+                            <required-field xsi:type="formatter-input-js-required-field">
+                                <name>input</name>
+                                <input-field>rest-response</input-field>
+                            </required-field>
+                        </required-fields>
+                        <generated-fields>
+                            <generated-field xsi:type="formatter-instantiatedTemplate-js-generated-field">
+                                <output-stream-id>s-3-B</output-stream-id>
+                                <name>instantiatedTemplate</name>
+                                <output-field>actualResponse</output-field>
+                                <data-type>string</data-type>
+                            </generated-field>
+                        </generated-fields>
+                        <process-params>
+                            <parameter name="conversionTemplate" xsi:type="formatter-js-process-paramType">
+                                <value>
+                                    <![CDATA[${rest\-response!}]]>
+                                </value>
+                            </parameter>
+                        </process-params>
+                    </processing-unit>
+                </processing-units>
+            </configuration>
+            <job-step-links>
+                <out-stream>
+                    <stream-id>s-3-B</stream-id>
+                    <output-fields>
+                        <field data-type="any" keep="true">message</field>
+                        <field data-type="string" keep="true">execTime</field>
+                        <field data-type="boolean" keep="true">ref</field>
+                        <field data-type="string" keep="true">transactionId</field>
+                        <field data-type="string" keep="true">timestampIngress</field>
+                        <field data-type="string" keep="true">request</field>
+                        <field data-type="string" keep="true">payloadId</field>
+                        <field data-type="integer" keep="true">rest-response-code</field>
+                        <field data-type="string" keep="true">rest-response</field>
+                        <field data-type="string" keep="true">actualResponse</field>
+                    </output-fields>
+                    <stream-consumers>
+                        <stream-consumer>
+                            <consuming-job-step-id>egressStep</consuming-job-step-id>
+                            <grouping-by>FIELD</grouping-by>
+                            <field-name>actualResponse</field-name>
+                        </stream-consumer>
+                    </stream-consumers>
+                </out-stream>
+            </job-step-links>
+            <step-type>TRANSFORMATION</step-type>
+            <tuple-processing-type>PARTIAL</tuple-processing-type>
+            <job-step-builder-class>com.fico.dmip.procjobstep.formatter.FormatterStrategyBuilder</job-step-builder-class>
+            <schedulable>false</schedulable>
+            <requires-data-source>false</requires-data-source>
+        </job-step>
+        <job-step parallelism-hint="1" xsi:type="formatter-job-step">
+            <description>The formatter job step uses the supplied FreeMarker template to output a converted string from the DMP Streaming tuple input values.</description>
+            <job-step-id>formatResult</job-step-id>
+            <job-step-version>
+                <version>1.0</version>
+                <dmip-version-since>1.0</dmip-version-since>
+                <organization>FICO</organization>
+            </job-step-version>
+            <configuration>
+                <processing-units>
+                    <processing-unit>
+                        <required-fields>
+                            <required-field xsi:type="formatter-input-js-required-field">
+                                <name>input</name>
+                                <input-field>rest-response</input-field>
+                            </required-field>
+                        </required-fields>
+                        <generated-fields>
+                            <generated-field xsi:type="formatter-instantiatedTemplate-js-generated-field">
+                                <output-stream-id>s-6-B</output-stream-id>
+                                <name>instantiatedTemplate</name>
+                                <output-field>timestampEgress</output-field>
+                                <data-type>string</data-type>
+                            </generated-field>
+                        </generated-fields>
+                        <process-params>
+                            <parameter name="conversionTemplate" xsi:type="formatter-js-process-paramType">
+                                <value>
+                                    <![CDATA[${.now?date?string["yyyy-MM-dd\'T\'HH:mm:ss.SSSZ"]}]]>
+                                </value>
+                            </parameter>
+                        </process-params>
+                    </processing-unit>
+                </processing-units>
+            </configuration>
+            <job-step-links>
+                <out-stream>
+                    <stream-id>s-6-B</stream-id>
+                    <output-fields>
+                        <field data-type="any" keep="true">message</field>
+                        <field data-type="string" keep="true">execTime</field>
+                        <field data-type="boolean" keep="true">ref</field>
+                        <field data-type="string" keep="true">transactionId</field>
+                        <field data-type="string" keep="true">timestampIngress</field>
+                        <field data-type="string" keep="true">request</field>
+                        <field data-type="string" keep="true">payloadId</field>
+                        <field data-type="integer" keep="true">rest-response-code</field>
+                        <field data-type="string" keep="true">rest-response</field>
+                        <field data-type="string" keep="true">timestampEgress</field>
+                    </output-fields>
+                    <stream-consumers>
+                        <stream-consumer>
+                            <consuming-job-step-id>resultStep</consuming-job-step-id>
+                            <grouping-by>SHUFFLE</grouping-by>
+                        </stream-consumer>
+                    </stream-consumers>
+                </out-stream>
+            </job-step-links>
+            <step-type>TRANSFORMATION</step-type>
+            <tuple-processing-type>PARTIAL</tuple-processing-type>
+            <job-step-builder-class>com.fico.dmip.procjobstep.formatter.FormatterStrategyBuilder</job-step-builder-class>
+            <schedulable>false</schedulable>
+            <requires-data-source>false</requires-data-source>
+        </job-step>
+        <job-step parallelism-hint="1" xsi:type="visualization-store-job-step">
+            <description>Indexes data into elasticsearch for the given elasticsearch type.</description>
+            <job-step-id>resultStep</job-step-id>
+            <job-step-version>
+                <version>1.0</version>
+                <dmip-version-since>1.0</dmip-version-since>
+                <organization>FICO</organization>
+            </job-step-version>
+            <configuration>
+                <job-step-params xsi:type="visualization-store-job-step-params">
+                    <es-type-name>resultStore</es-type-name>
+                    <batch-size>100</batch-size>
+                    <idle-time>1</idle-time>
+                </job-step-params>
+            </configuration>
+            <step-type>OUTBOUND</step-type>
+            <tuple-processing-type>PARTIAL</tuple-processing-type>
+            <job-step-builder-class>com.fico.dmip.procjobstep.visualization.VisualizationStoreStrategyBuilder</job-step-builder-class>
+            <schedulable>false</schedulable>
+            <requires-data-source>true</requires-data-source>
+        </job-step>
+        <job-step parallelism-hint="1" xsi:type="formatter-job-step">
+            <description>Formatter uses a FreeMarker template to build a single string from the input tuple values, and sends the converted string to a downstream job step.</description>
+            <job-step-id>initialize</job-step-id>
+            <job-step-version>
+                <version>1.0</version>
+                <dmip-version-since>1.0</dmip-version-since>
+                <organization>FICO</organization>
+            </job-step-version>
+            <configuration>
+                <processing-units>
+                    <processing-unit>
+                        <required-fields>
+                            <required-field xsi:type="formatter-input-js-required-field">
+                                <name>input</name>
+                                <input-field>message</input-field>
+                            </required-field>
+                        </required-fields>
+                        <generated-fields>
+                            <generated-field xsi:type="formatter-instantiatedTemplate-js-generated-field">
+                                <output-stream-id>s-4-B</output-stream-id>
+                                <name>instantiatedTemplate</name>
+                                <output-field>ref</output-field>
+                                <data-type>boolean</data-type>
+                            </generated-field>
+                        </generated-fields>
+                        <process-params>
+                            <parameter name="conversionTemplate" xsi:type="formatter-js-process-paramType">
+                                <value>
+                                    <![CDATA[false]]>
+                                </value>
+                            </parameter>
+                        </process-params>
+                    </processing-unit>
+                    <processing-unit>
+                        <required-fields>
+                            <required-field xsi:type="formatter-input-js-required-field">
+                                <name>input</name>
+                                <input-field>message</input-field>
+                            </required-field>
+                        </required-fields>
+                        <generated-fields>
+                            <generated-field xsi:type="formatter-instantiatedTemplate-js-generated-field">
+                                <output-stream-id>s-4-B</output-stream-id>
+                                <name>instantiatedTemplate</name>
+                                <output-field>timestampIngress</output-field>
+                                <data-type>string</data-type>
+                            </generated-field>
+                        </generated-fields>
+                        <process-params>
+                            <parameter name="conversionTemplate" xsi:type="formatter-js-process-paramType">
+                                <value>
+                                    <![CDATA[${.now?date?string["yyyy-MM-dd\'T\'HH:mm:ss.SSSZ"]}]]>
+                                </value>
+                            </parameter>
+                        </process-params>
+                    </processing-unit>
+                    <processing-unit>
+                        <required-fields>
+                            <required-field xsi:type="formatter-input-js-required-field">
+                                <name>input</name>
+                                <input-field>message</input-field>
+                            </required-field>
+                        </required-fields>
+                        <generated-fields>
+                            <generated-field xsi:type="formatter-instantiatedTemplate-js-generated-field">
+                                <output-stream-id>s-4-B</output-stream-id>
+                                <name>instantiatedTemplate</name>
+                                <output-field>transactionId</output-field>
+                                <data-type>string</data-type>
+                            </generated-field>
+                        </generated-fields>
+                        <process-params>
+                            <parameter name="conversionTemplate" xsi:type="formatter-js-process-paramType">
+                                <value>
+                                    <![CDATA[${.now?date?string["yyyy_MM_dd_HH_mm_ss_SSS"]}]]>
+                                </value>
+                            </parameter>
+                        </process-params>
+                    </processing-unit>
+                </processing-units>
+            </configuration>
+            <job-step-links>
+                <out-stream>
+                    <stream-id>s-4-B</stream-id>
+                    <output-fields>
+                        <field data-type="any" keep="true">message</field>
+                        <field data-type="boolean" keep="true">ref</field>
+                        <field data-type="string" keep="true">timestampIngress</field>
+                        <field data-type="string" keep="true">transactionId</field>
+                    </output-fields>
+                    <stream-consumers>
+                        <stream-consumer>
+                            <consuming-job-step-id>normalizePayloadStep</consuming-job-step-id>
+                            <grouping-by>SHUFFLE</grouping-by>
+                        </stream-consumer>
+                    </stream-consumers>
+                </out-stream>
+            </job-step-links>
+            <step-type>TRANSFORMATION</step-type>
+            <tuple-processing-type>PARTIAL</tuple-processing-type>
+            <job-step-builder-class>com.fico.dmip.procjobstep.formatter.FormatterStrategyBuilder</job-step-builder-class>
+            <schedulable>false</schedulable>
+            <requires-data-source>false</requires-data-source>
+        </job-step>
+        <job-step parallelism-hint="1" processing-iteration-count="1" xsi:type="topic-inbound-job-step">
+            <description>Topic Inbound consumes tuples from a specified topic in the DPC and emits them to be processed by downstream job steps.</description>
+            <job-step-id>requestStep</job-step-id>
+            <job-step-version>
+                <version>1.0</version>
+                <dmip-version-since>1.0</dmip-version-since>
+                <organization>FICO</organization>
+            </job-step-version>
+            <configuration>
+                <job-step-params xsi:type="topic-inbound-job-step-params">
+                    <topic-name>requestTopic</topic-name>
+                </job-step-params>
+                <processing-units>
+                    <processing-unit>
+                        <generated-fields>
+                            <generated-field xsi:type="topic-inbound-js-generated-field">
+                                <output-stream-id>s-7-B</output-stream-id>
+                                <name>field-data</name>
+                                <output-field>
+                                    <name>message</name>
+                                    <data-type>any</data-type>
+                                </output-field>
+                            </generated-field>
+                        </generated-fields>
+                    </processing-unit>
+                </processing-units>
+            </configuration>
+            <job-step-links>
+                <out-stream>
+                    <stream-id>s-7-B</stream-id>
+                    <output-fields>
+                        <field data-type="any" keep="true">message</field>
+                    </output-fields>
+                    <stream-consumers>
+                        <stream-consumer>
+                            <consuming-job-step-id>initialize</consuming-job-step-id>
+                            <grouping-by>SHUFFLE</grouping-by>
+                        </stream-consumer>
+                    </stream-consumers>
+                </out-stream>
+            </job-step-links>
+            <step-type>INBOUND</step-type>
+            <tuple-processing-type>FULL</tuple-processing-type>
+            <job-step-builder-class>com.fico.dmip.injobstep.topic.TopicInboundStrategyBuilder</job-step-builder-class>
+            <schedulable>false</schedulable>
+            <requires-data-source>true</requires-data-source>
+        </job-step>
+        <job-step parallelism-hint="1" xsi:type="topic-outbound-job-step">
+            <description>Topic Outbound receives input fields from the previous job step, and then generates tuples and sends them to the topic associated with the job step.</description>
+            <job-step-id>egressStep</job-step-id>
+            <job-step-version>
+                <version>1.0</version>
+                <dmip-version-since>1.0</dmip-version-since>
+                <organization>FICO</organization>
+            </job-step-version>
+            <configuration>
+                <job-step-params xsi:type="topic-outbound-job-step-params">
+                    <topic-name>responseTopic</topic-name>
+                    <replication-factor>0</replication-factor>
+                    <acknowledgement-level>Platform Default</acknowledgement-level>
+                </job-step-params>
+            </configuration>
+            <step-type>OUTBOUND</step-type>
+            <tuple-processing-type>FULL</tuple-processing-type>
+            <job-step-builder-class>com.fico.dmip.procjobstep.topicoutbound.TopicOutboundStrategyBuilder</job-step-builder-class>
+            <schedulable>false</schedulable>
+            <requires-data-source>true</requires-data-source>
+        </job-step>
+    </job-steps>
+</job-specification>
